@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Contact Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section, .records-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #182848;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #4b6cb7;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #4b6cb7;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+        }
+        
+        .optional {
+            color: #777;
+            font-weight: normal;
+            font-size: 0.9rem;
+        }
+        
+        .required {
+            color: #e63946;
+        }
+        
+        .guarantor-section {
+            background-color: #f9fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #4b6cb7;
+        }
+        
+        .guarantor-title {
+            font-size: 1.2rem;
+            color: #182848;
+            margin-bottom: 15px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .submit-btn {
+            background-color: #4b6cb7;
+            color: white;
+            flex: 2;
+        }
+        
+        .submit-btn:hover {
+            background-color: #3a5699;
+            transform: translateY(-2px);
+        }
+        
+        .reset-btn {
+            background-color: #f1f5f9;
+            color: #444;
+            flex: 1;
+        }
+        
+        .reset-btn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .export-btn {
+            background-color: #10b981;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .export-btn:hover {
+            background-color: #0da271;
+        }
+        
+        .import-btn {
+            background-color: #3b82f6;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .import-btn:hover {
+            background-color: #2563eb;
+        }
+        
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8fafc;
+            color: #182848;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f9fafc;
+        }
+        
+        .customer-row {
+            cursor: pointer;
+        }
+        
+        .customer-row:hover {
+            background-color: #f0f4f8;
+        }
+        
+        .today-row {
+            background-color: #fef3c7 !important;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .overdue-row {
+            background-color: #fee2e2 !important;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .upcoming-row {
+            background-color: #d1fae5 !important;
+            border-left: 4px solid #10b981;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+        }
+        
+        .edit-btn {
+            background-color: #f0f9ff;
+            color: #0369a1;
+        }
+        
+        .delete-btn {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .contact-btn {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .sync-btn {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        
+        .sync-btn:hover {
+            background-color: #7c3aed;
+        }
+        
+        .notification-btn {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .notification-btn:hover {
+            background-color: #d97706;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .contacted {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .date-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .today-badge {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .tomorrow-badge {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .this-week-badge {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            max-width: 400px;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .success {
+            background-color: #10b981;
+        }
+        
+        .error {
+            background-color: #ef4444;
+        }
+        
+        .info {
+            background-color: #3b82f6;
+        }
+        
+        .warning {
+            background-color: #f59e0b;
+        }
+        
+        .customer-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            border-radius: 10px;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            color: #182848;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #777;
+            cursor: pointer;
+        }
+        
+        .customer-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .info-group {
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #333;
+            padding: 8px;
+            background-color: #f9fafc;
+            border-radius: 5px;
+            border-left: 3px solid #4b6cb7;
+        }
+        
+        .guarantor-info {
+            background-color: #f0f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .guarantor-info h4 {
+            color: #182848;
+            margin-bottom: 10px;
+        }
+        
+        .storage-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .storage-local {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .storage-cloud {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .reminder-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .reminder-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            border-radius: 10px;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .reminder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f59e0b;
+        }
+        
+        .reminder-title {
+            font-size: 1.8rem;
+            color: #182848;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .reminder-title i {
+            color: #f59e0b;
+        }
+        
+        .reminder-list {
+            margin-top: 20px;
+        }
+        
+        .reminder-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+            background-color: #fffbeb;
+        }
+        
+        .reminder-item.today {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        .reminder-item.tomorrow {
+            border-left-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+        
+        .reminder-item.upcoming {
+            border-left-color: #10b981;
+            background-color: #d1fae5;
+        }
+        
+        .reminder-customer-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .reminder-details {
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            .data-actions {
+                flex-direction: column;
+            }
+            
+            .modal-content, .reminder-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .notification-badge {
+                top: 10px;
+                right: 10px;
+                width: 25px;
+                height: 25px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-address-book"></i> Customer Contact Manager</h1>
+            <p>Store and manage customer information with contact scheduling and guarantor details</p>
+            <p><small>Connected to online database <i class="fas fa-cloud"></i></small></p>
+            
+            <!-- Notification Badge -->
+            <div class="notification-badge" id="notificationBadge" title="Click to view reminders">
+                <span id="notificationCount">0</span>
+            </div>
+        </header>
+        
+        <div class="app-container">
+            <section class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> Add New Customer</h2>
+                <form id="customerForm">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name <span class="required">*</span></label>
+                        <input type="text" id="customerName" required placeholder="Enter full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumbers">Phone Numbers <span class="required">*</span></label>
+                        <input type="text" id="phoneNumbers" required placeholder="e.g., 123-456-7890, 987-654-3210">
+                        <small>Separate multiple numbers with commas</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Location Details <span class="required">*</span></label>
+                        <textarea id="location" rows="2" required placeholder="Enter address, city, state, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product">Product Interested In <span class="required">*</span></label>
+                        <input type="text" id="product" required placeholder="Product name or description">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactDate">Date/Day to Contact <span class="required">*</span></label>
+                        <input type="date" id="contactDate" required>
+                    </div>
+                    
+                    <div class="guarantor-section">
+                        <div class="guarantor-title">Guarantor 1 (Optional)</div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor1Name">Name <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor1Name" placeholder="Guarantor's full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor1Phone">Phone Number <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor1Phone" placeholder="Guarantor's phone number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor1Location">Location <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor1Location" placeholder="Guarantor's location">
+                        </div>
+                    </div>
+                    
+                    <div class="guarantor-section">
+                        <div class="guarantor-title">Guarantor 2 (Optional)</div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor2Name">Name <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor2Name" placeholder="Guarantor's full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor2Phone">Phone Number <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor2Phone" placeholder="Guarantor's phone number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guarantor2Location">Location <span class="optional">(optional)</span></label>
+                            <input type="text" id="guarantor2Location" placeholder="Guarantor's location">
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-save"></i> Save Customer Record
+                        </button>
+                        <button type="button" class="reset-btn" id="resetBtn">
+                            <i class="fas fa-redo"></i> Clear Form
+                        </button>
+                    </div>
+                </form>
+            </section>
+            
+            <section class="records-section">
+                <h2 class="section-title">
+                    <i class="fas fa-list-alt"></i> Customer Records 
+                    <span id="storageStatus" class="storage-status storage-cloud">Online Database</span>
+                </h2>
+                
+                <div class="data-actions">
+                    <button class="notification-btn" id="viewRemindersBtn">
+                        <i class="fas fa-bell"></i> View Reminders
+                    </button>
+                    <button class="sync-btn" id="syncBtn">
+                        <i class="fas fa-sync-alt"></i> Sync with Cloud
+                    </button>
+                    <button class="export-btn" id="exportBtn">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <button class="import-btn" id="importBtn">
+                        <i class="fas fa-upload"></i> Import Data
+                    </button>
+                    <button class="reset-btn" id="clearAllBtn">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+                
+                <div id="recordsTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact Date</th>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody">
+                            <!-- Records will be loaded here -->
+                        </tbody>
+                    </table>
+                    <div id="noDataMessage" class="no-data">
+                        <i class="fas fa-database fa-2x"></i>
+                        <p>No customer records found. Add your first customer above.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Customer Detail Modal -->
+        <div class="customer-detail-modal" id="customerModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Customer Details</h3>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+                <div id="customerDetails">
+                    <!-- Customer details will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reminder Modal -->
+        <div class="reminder-modal" id="reminderModal">
+            <div class="reminder-content">
+                <div class="reminder-header">
+                    <h3 class="reminder-title"><i class="fas fa-bell"></i> Contact Reminders</h3>
+                    <button class="close-modal" id="closeReminderModal">&times;</button>
+                </div>
+                <div id="reminderContent">
+                    <!-- Reminders will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Customer Contact Management App | Connected to JSONBin.io Online Database</p>
+            <p>Data is stored securely in the cloud and can be accessed from anywhere</p>
+        </footer>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // ==============================================
+        // YOUR DATABASE CREDENTIALS (Already inserted!)
+        // ==============================================
+        const BIN_ID = '6960140d43b1c97be92293b4'; // Your Bin ID
+        const API_KEY = '$2a$10$PdqXWWRKGJ0qoA1pKNRHHOT2lXGikA/vl40fftBIueYWTxUwTj4PW'; // Your X-Master-Key
+        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        // ==============================================
+        
+        // DOM Elements
+        const customerForm = document.getElementById('customerForm');
+        const resetBtn = document.getElementById('resetBtn');
+        const syncBtn = document.getElementById('syncBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const viewRemindersBtn = document.getElementById('viewRemindersBtn');
+        const recordsBody = document.getElementById('recordsBody');
+        const noDataMessage = document.getElementById('noDataMessage');
+        const notification = document.getElementById('notification');
+        const customerModal = document.getElementById('customerModal');
+        const closeModal = document.getElementById('closeModal');
+        const customerDetails = document.getElementById('customerDetails');
+        const storageStatus = document.getElementById('storageStatus');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const notificationCount = document.getElementById('notificationCount');
+        const reminderModal = document.getElementById('reminderModal');
+        const reminderContent = document.getElementById('reminderContent');
+        const closeReminderModal = document.getElementById('closeReminderModal');
+        
+        // State
+        let customers = [];
+        let editingId = null;
+        let usingLocalStorage = false;
+        let reminderCheckInterval = null;
+        let lastReminderCheck = null;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setMinDateForContactDate();
+            setupEventListeners();
+            
+            // Try to load from cloud first, then fallback to local
+            loadCustomersFromCloud().then(success => {
+                if (!success) {
+                    loadCustomersFromLocal();
+                }
+            });
+            
+            // Start reminder checking
+            startReminderChecker();
+            
+            // Check for reminders immediately
+            checkReminders();
+            
+            // Check reminders every 5 minutes
+            reminderCheckInterval = setInterval(checkReminders, 5 * 60 * 1000);
+        });
+        
+        // Set today's date as min for contact date field
+        function setMinDateForContactDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('contactDate').min = today;
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            customerForm.addEventListener('submit', handleFormSubmit);
+            resetBtn.addEventListener('click', resetForm);
+            syncBtn.addEventListener('click', syncWithCloud);
+            exportBtn.addEventListener('click', exportData);
+            importBtn.addEventListener('click', importData);
+            clearAllBtn.addEventListener('click', clearAllData);
+            viewRemindersBtn.addEventListener('click', showRemindersModal);
+            notificationBadge.addEventListener('click', showRemindersModal);
+            closeModal.addEventListener('click', () => {
+                customerModal.style.display = 'none';
+            });
+            closeReminderModal.addEventListener('click', () => {
+                reminderModal.style.display = 'none';
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === customerModal) {
+                    customerModal.style.display = 'none';
+                }
+                if (event.target === reminderModal) {
+                    reminderModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Start reminder checker
+        function startReminderChecker() {
+            // Check reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Also check when page becomes visible again
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    checkReminders();
+                }
+            });
+        }
+        
+        // Check for upcoming contact dates
+        function checkReminders() {
+            if (customers.length === 0) return;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            let reminderCount = 0;
+            const reminders = {
+                today: [],
+                tomorrow: [],
+                thisWeek: []
+            };
+            
+            customers.forEach(customer => {
+                if (customer.status === 'contacted') return;
+                
+                const contactDate = new Date(customer.contactDate);
+                contactDate.setHours(0, 0, 0, 0);
+                
+                // Check if contact date is today
+                if (contactDate.getTime() === today.getTime()) {
+                    reminderCount++;
+                    reminders.today.push(customer);
+                }
+                // Check if contact date is tomorrow
+                else if (contactDate.getTime() === tomorrow.getTime()) {
+                    reminderCount++;
+                    reminders.tomorrow.push(customer);
+                }
+                // Check if contact date is within next 7 days (but not today or tomorrow)
+                else if (contactDate > today && contactDate <= nextWeek) {
+                    reminderCount++;
+                    reminders.thisWeek.push(customer);
+                }
+            });
+            
+            // Update notification badge
+            updateReminderBadge(reminderCount);
+            
+            // Show desktop notification for today's reminders (if any)
+            if (reminders.today.length > 0 && canShowDesktopNotification()) {
+                showDesktopNotification(reminders.today.length);
+            }
+            
+            // Store reminders for display
+            window.currentReminders = reminders;
+            
+            return reminders;
+        }
+        
+        // Update reminder badge
+        function updateReminderBadge(count) {
+            notificationCount.textContent = count;
+            
+            if (count > 0) {
+                notificationBadge.style.display = 'flex';
+                notificationBadge.style.backgroundColor = count > 5 ? '#ef4444' : '#f59e0b';
+                
+                // Pulse animation for new reminders
+                if (!lastReminderCheck || (new Date() - lastReminderCheck) > 60000) {
+                    notificationBadge.style.animation = 'pulse 2s infinite';
+                }
+            } else {
+                notificationBadge.style.display = 'none';
+            }
+            
+            lastReminderCheck = new Date();
+        }
+        
+        // Check if desktop notifications are allowed
+        function canShowDesktopNotification() {
+            return "Notification" in window && Notification.permission === "granted";
+        }
+        
+        // Request permission for desktop notifications
+        function requestNotificationPermission() {
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        showNotification("Notifications enabled! You'll get reminders for contact dates.", "success");
+                    }
+                });
+            }
+        }
+        
+        // Show desktop notification
+        function showDesktopNotification(count) {
+            if (!canShowDesktopNotification()) {
+                requestNotificationPermission();
+                return;
+            }
+            
+            const notification = new Notification("Customer Contact Reminder", {
+                body: `You have ${count} customer(s) to contact today!`,
+                icon: "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
+                tag: "contact-reminder"
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                showRemindersModal();
+            };
+        }
+        
+        // Show reminders modal
+        function showRemindersModal() {
+            const reminders = checkReminders();
+            let reminderHTML = '';
+            
+            if (reminders.today.length === 0 && 
+                reminders.tomorrow.length === 0 && 
+                reminders.thisWeek.length === 0) {
+                reminderHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-check-circle fa-3x" style="color: #10b981; margin-bottom: 20px;"></i>
+                        <h3 style="color: #555; margin-bottom: 10px;">No Pending Reminders</h3>
+                        <p style="color: #777;">You're all caught up! No customers need to be contacted right now.</p>
+                    </div>
+                `;
+            } else {
+                // Today's reminders
+                if (reminders.today.length > 0) {
+                    reminderHTML += `
+                        <h4 style="color: #ef4444; margin-top: 20px; margin-bottom: 10px;">
+                            <i class="fas fa-exclamation-circle"></i> Today (${reminders.today.length})
+                        </h4>
+                    `;
+                    
+                    reminders.today.forEach(customer => {
+                        reminderHTML += createReminderItem(customer, 'today');
+                    });
+                }
+                
+                // Tomorrow's reminders
+                if (reminders.tomorrow.length > 0) {
+                    reminderHTML += `
+                        <h4 style="color: #f59e0b; margin-top: 20px; margin-bottom: 10px;">
+                            <i class="fas fa-clock"></i> Tomorrow (${reminders.tomorrow.length})
+                        </h4>
+                    `;
+                    
+                    reminders.tomorrow.forEach(customer => {
+                        reminderHTML += createReminderItem(customer, 'tomorrow');
+                    });
+                }
+                
+                // This week's reminders
+                if (reminders.thisWeek.length > 0) {
+                    reminderHTML += `
+                        <h4 style="color: #10b981; margin-top: 20px; margin-bottom: 10px;">
+                            <i class="fas fa-calendar-week"></i> This Week (${reminders.thisWeek.length})
+                        </h4>
+                    `;
+                    
+                    reminders.thisWeek.forEach(customer => {
+                        reminderHTML += createReminderItem(customer, 'upcoming');
+                    });
+                }
+                
+                // Add notification permission request if not granted
+                if (!canShowDesktopNotification()) {
+                    reminderHTML += `
+                        <div style="margin-top: 30px; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
+                            <p style="margin-bottom: 10px; color: #555;">
+                                <i class="fas fa-bell"></i> Enable desktop notifications to get reminders even when the app is closed.
+                            </p>
+                            <button onclick="requestNotificationPermission()" style="
+                                background-color: #3b82f6; 
+                                color: white; 
+                                border: none; 
+                                padding: 8px 16px; 
+                                border-radius: 4px; 
+                                cursor: pointer;
+                                font-weight: 600;
+                            ">
+                                Enable Notifications
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            reminderContent.innerHTML = reminderHTML;
+            reminderModal.style.display = 'flex';
+            
+            // Stop pulsing animation when viewed
+            notificationBadge.style.animation = 'none';
+        }
+        
+        // Create reminder item HTML
+        function createReminderItem(customer, type) {
+            const contactDate = new Date(customer.contactDate);
+            const formattedDate = contactDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            let daysLeft = '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const contactDateCopy = new Date(contactDate);
+            contactDateCopy.setHours(0, 0, 0, 0);
+            
+            const diffTime = contactDateCopy - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (type === 'today') {
+                daysLeft = 'Today';
+            } else if (type === 'tomorrow') {
+                daysLeft = 'Tomorrow';
+            } else {
+                daysLeft = `In ${diffDays} days`;
+            }
+            
+            return `
+                <div class="reminder-item ${type}" onclick="showCustomerDetails('${customer.id}')" style="cursor: pointer;">
+                    <div class="reminder-customer-name">${customer.name}</div>
+                    <div class="reminder-details">
+                        <div>
+                            <strong>Product:</strong> ${customer.product}<br>
+                            <strong>Phone:</strong> ${customer.phoneNumbers[0]}
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>Date:</strong> ${formattedDate}<br>
+                            <strong>Due:</strong> ${daysLeft}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const customerData = {
+                id: editingId || Date.now().toString(),
+                name: document.getElementById('customerName').value.trim(),
+                phoneNumbers: document.getElementById('phoneNumbers').value.trim().split(',').map(num => num.trim()),
+                location: document.getElementById('location').value.trim(),
+                product: document.getElementById('product').value.trim(),
+                contactDate: document.getElementById('contactDate').value,
+                guarantor1: {
+                    name: document.getElementById('guarantor1Name').value.trim(),
+                    phone: document.getElementById('guarantor1Phone').value.trim(),
+                    location: document.getElementById('guarantor1Location').value.trim()
+                },
+                guarantor2: {
+                    name: document.getElementById('guarantor2Name').value.trim(),
+                    phone: document.getElementById('guarantor2Phone').value.trim(),
+                    location: document.getElementById('guarantor2Location').value.trim()
+                },
+                status: 'pending', // pending, contacted
+                createdAt: editingId ? getCustomerById(editingId).createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Validate required fields
+            if (!customerData.name || !customerData.phoneNumbers.length || !customerData.location || 
+                !customerData.product || !customerData.contactDate) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            try {
+                // Update or add customer
+                if (editingId) {
+                    // Update existing customer
+                    const index = customers.findIndex(c => c.id === editingId);
+                    if (index !== -1) {
+                        customers[index] = customerData;
+                    }
+                    showNotification('Customer record updated successfully!', 'success');
+                } else {
+                    // Add new customer
+                    customers.push(customerData);
+                    showNotification('Customer record added successfully!', 'success');
+                }
+                
+                // Save to cloud database
+                const savedToCloud = await saveCustomersToCloud();
+                
+                // Also save to localStorage as backup
+                saveCustomersToLocal();
+                
+                // Update storage status
+                updateStorageStatus(savedToCloud);
+                
+                // Check for new reminders
+                checkReminders();
+                
+                // Reset form and refresh table
+                resetForm();
+                renderCustomersTable();
+                
+            } catch (error) {
+                console.error('Error saving customer:', error);
+                showNotification('Failed to save customer. Please try again.', 'error');
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            customerForm.reset();
+            editingId = null;
+            document.querySelector('.submit-btn i').className = 'fas fa-save';
+            document.querySelector('.submit-btn').innerHTML = '<i class="fas fa-save"></i> Save Customer Record';
+            setMinDateForContactDate();
+        }
+        
+        // Load customers from cloud database
+        async function loadCustomersFromCloud() {
+            try {
+                showNotification('Loading data from cloud...', 'info');
+                
+                const response = await fetch(API_URL + '/latest', {
+                    headers: {
+                        'X-Master-Key': API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load data from cloud');
+                }
+                
+                const data = await response.json();
+                
+                // If we have data in the bin, use it
+                if (data.record && data.record.customers) {
+                    customers = data.record.customers;
+                    showNotification(`Loaded ${customers.length} customer(s) from cloud`, 'success');
+                    updateStorageStatus(true);
+                    
+                    // Also save to localStorage as backup
+                    saveCustomersToLocal();
+                    
+                    renderCustomersTable();
+                    return true;
+                } else {
+                    // Initialize with empty array if no data exists
+                    customers = [];
+                    showNotification('Cloud database is empty', 'info');
+                    updateStorageStatus(true);
+                    return true;
+                }
+                
+            } catch (error) {
+                console.error('Error loading from cloud:', error);
+                showNotification('Cannot connect to cloud. Using local storage.', 'warning');
+                updateStorageStatus(false);
+                return false;
+            }
+        }
+        
+        // Load customers from localStorage
+        function loadCustomersFromLocal() {
+            try {
+                const savedData = localStorage.getItem('customerData');
+                if (savedData) {
+                    customers = JSON.parse(savedData);
+                    showNotification(`Loaded ${customers.length} customer(s) from local storage`, 'info');
+                    renderCustomersTable();
+                } else {
+                    customers = [];
+                    showNotification('No existing data found', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading from local storage:', error);
+                customers = [];
+                showNotification('Error loading data. Starting fresh.', 'error');
+            }
+        }
+        
+        // Save customers to cloud database
+        async function saveCustomersToCloud() {
+            try {
+                const dataToSave = {
+                    customers: customers,
+                    lastUpdated: new Date().toISOString(),
+                    totalRecords: customers.length
+                };
+                
+                const response = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSave)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save to cloud');
+                }
+                
+                console.log('Data saved to cloud successfully');
+                return true;
+            } catch (error) {
+                console.error('Error saving to cloud:', error);
+                return false;
+            }
+        }
+        
+        // Save customers to localStorage
+        function saveCustomersToLocal() {
+            try {
+                localStorage.setItem('customerData', JSON.stringify(customers));
+                return true;
+            } catch (error) {
+                console.error('Error saving to local storage:', error);
+                return false;
+            }
+        }
+        
+        // Sync with cloud database
+        async function syncWithCloud() {
+            try {
+                showNotification('Syncing with cloud...', 'info');
+                
+                // First try to save local data to cloud
+                const savedToCloud = await saveCustomersToCloud();
+                
+                if (savedToCloud) {
+                    showNotification('Data synced successfully with cloud!', 'success');
+                    updateStorageStatus(true);
+                } else {
+                    // If save fails, try to load from cloud
+                    const loadedFromCloud = await loadCustomersFromCloud();
+                    if (loadedFromCloud) {
+                        showNotification('Loaded latest data from cloud', 'success');
+                        updateStorageStatus(true);
+                    } else {
+                        showNotification('Cannot sync with cloud. Check internet connection.', 'error');
+                        updateStorageStatus(false);
+                    }
+                }
+            } catch (error) {
+                console.error('Error syncing:', error);
+                showNotification('Error syncing with cloud', 'error');
+            }
+        }
+        
+        // Update storage status display
+        function updateStorageStatus(isCloudConnected) {
+            usingLocalStorage = !isCloudConnected;
+            
+            if (isCloudConnected) {
+                storageStatus.textContent = 'Online Database';
+                storageStatus.className = 'storage-status storage-cloud';
+                syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync with Cloud';
+            } else {
+                storageStatus.textContent = 'Local Storage';
+                storageStatus.className = 'storage-status storage-local';
+                syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Retry Cloud Connection';
+            }
+        }
+        
+        // Render customers table with date highlighting
+        function renderCustomersTable() {
+            if (customers.length === 0) {
+                recordsBody.innerHTML = '';
+                noDataMessage.style.display = 'block';
+                return;
+            }
+            
+            noDataMessage.style.display = 'none';
+            
+            // Sort customers by contact date (ascending)
+            const sortedCustomers = [...customers].sort((a, b) => 
+                new Date(a.contactDate) - new Date(b.contactDate)
+            );
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            // Generate table rows
+            let tableHTML = '';
+            
+            sortedCustomers.forEach(customer => {
+                const contactDate = new Date(customer.contactDate);
+                contactDate.setHours(0, 0, 0, 0);
+                
+                const formattedDate = contactDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                const statusClass = customer.status === 'contacted' ? 'contacted' : 'pending';
+                const statusText = customer.status === 'contacted' ? 'Contacted' : 'Pending';
+                
+                // Determine row class based on date
+                let rowClass = '';
+                let dateBadge = '';
+                
+                if (customer.status !== 'contacted') {
+                    if (contactDate.getTime() === today.getTime()) {
+                        rowClass = 'today-row';
+                        dateBadge = '<span class="date-badge today-badge">Today</span>';
+                    } else if (contactDate.getTime() === tomorrow.getTime()) {
+                        rowClass = 'tomorrow-row';
+                        dateBadge = '<span class="date-badge tomorrow-badge">Tomorrow</span>';
+                    } else if (contactDate > today && contactDate <= nextWeek) {
+                        rowClass = 'upcoming-row';
+                        
+                        const diffTime = contactDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        dateBadge = `<span class="date-badge this-week-badge">In ${diffDays} days</span>`;
+                    } else if (contactDate < today) {
+                        rowClass = 'overdue-row';
+                        dateBadge = '<span class="date-badge today-badge">Overdue</span>';
+                    }
+                }
+                
+                tableHTML += `
+                    <tr class="customer-row ${rowClass}" data-id="${customer.id}">
+                        <td><strong>${customer.name}</strong></td>
+                        <td>${formattedDate} ${dateBadge}</td>
+                        <td>${customer.product}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td class="actions-cell">
+                            <button class="action-btn contact-btn" onclick="markAsContacted('${customer.id}')">
+                                <i class="fas fa-phone"></i> Contacted
+                            </button>
+                            <button class="action-btn edit-btn" onclick="editCustomer('${customer.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteCustomer('${customer.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            recordsBody.innerHTML = tableHTML;
+            
+            // Add click event to rows to show details
+            document.querySelectorAll('.customer-row').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on action buttons
+                    if (!e.target.closest('.action-btn')) {
+                        const customerId = this.getAttribute('data-id');
+                        showCustomerDetails(customerId);
+                    }
+                });
+            });
+        }
+        
+        // Show customer details in modal
+        function showCustomerDetails(id) {
+            const customer = getCustomerById(id);
+            if (!customer) return;
+            
+            const contactDate = new Date(customer.contactDate);
+            const formattedDate = contactDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const createdAt = new Date(customer.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Calculate days until contact
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const contactDateCopy = new Date(contactDate);
+            contactDateCopy.setHours(0, 0, 0, 0);
+            
+            const diffTime = contactDateCopy - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let daysText = '';
+            if (diffDays === 0) {
+                daysText = '<span style="color: #ef4444; font-weight: bold;">Today</span>';
+            } else if (diffDays === 1) {
+                daysText = '<span style="color: #f59e0b; font-weight: bold;">Tomorrow</span>';
+            } else if (diffDays > 1) {
+                daysText = `<span style="color: #10b981; font-weight: bold;">In ${diffDays} days</span>`;
+            } else {
+                daysText = `<span style="color: #ef4444; font-weight: bold;">${Math.abs(diffDays)} days ago</span>`;
+            }
+            
+            let detailsHTML = `
+                <div class="customer-info-grid">
+                    <div class="info-group">
+                        <div class="info-label">Customer Name</div>
+                        <div class="info-value">${customer.name}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Phone Numbers</div>
+                        <div class="info-value">${customer.phoneNumbers.join(', ')}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Location</div>
+                        <div class="info-value">${customer.location}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Product Interested In</div>
+                        <div class="info-value">${customer.product}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Contact Date</div>
+                        <div class="info-value">${formattedDate}<br>${daysText}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            <span class="status-badge ${customer.status === 'contacted' ? 'contacted' : 'pending'}">
+                                ${customer.status === 'contacted' ? 'Contacted' : 'Pending Contact'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Record Created</div>
+                        <div class="info-value">${createdAt}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Storage</div>
+                        <div class="info-value">
+                            ${usingLocalStorage ? 'Local Storage (Offline)' : 'Cloud Database (Online)'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add guarantor information if available
+            if (customer.guarantor1.name || customer.guarantor2.name) {
+                detailsHTML += '<h4>Guarantor Information</h4>';
+                
+                if (customer.guarantor1.name) {
+                    detailsHTML += `
+                        <div class="guarantor-info">
+                            <h4>Guarantor 1</h4>
+                            <div class="info-group">
+                                <div class="info-label">Name</div>
+                                <div class="info-value">${customer.guarantor1.name}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">${customer.guarantor1.phone}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Location</div>
+                                <div class="info-value">${customer.guarantor1.location}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (customer.guarantor2.name) {
+                    detailsHTML += `
+                        <div class="guarantor-info">
+                            <h4>Guarantor 2</h4>
+                            <div class="info-group">
+                                <div class="info-label">Name</div>
+                                <div class="info-value">${customer.guarantor2.name}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">${customer.guarantor2.phone}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Location</div>
+                                <div class="info-value">${customer.guarantor2.location}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            customerDetails.innerHTML = detailsHTML;
+            customerModal.style.display = 'flex';
+        }
+        
+        // Edit customer
+        function editCustomer(id) {
+            const customer = getCustomerById(id);
+            if (!customer) return;
+            
+            // Populate form with customer data
+            document.getElementById('customerName').value = customer.name;
+            document.getElementById('phoneNumbers').value = customer.phoneNumbers.join(', ');
+            document.getElementById('location').value = customer.location;
+            document.getElementById('product').value = customer.product;
+            document.getElementById('contactDate').value = customer.contactDate;
+            
+            // Populate guarantor 1 data
+            if (customer.guarantor1) {
+                document.getElementById('guarantor1Name').value = customer.guarantor1.name || '';
+                document.getElementById('guarantor1Phone').value = customer.guarantor1.phone || '';
+                document.getElementById('guarantor1Location').value = customer.guarantor1.location || '';
+            }
+            
+            // Populate guarantor 2 data
+            if (customer.guarantor2) {
+                document.getElementById('guarantor2Name').value = customer.guarantor2.name || '';
+                document.getElementById('guarantor2Phone').value = customer.guarantor2.phone || '';
+                document.getElementById('guarantor2Location').value = customer.guarantor2.location || '';
+            }
+            
+            // Set editing state
+            editingId = id;
+            document.querySelector('.submit-btn i').className = 'fas fa-edit';
+            document.querySelector('.submit-btn').innerHTML = '<i class="fas fa-edit"></i> Update Customer Record';
+            
+            // Scroll to form
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Mark customer as contacted
+        async function markAsContacted(id) {
+            const customer = getCustomerById(id);
+            if (!customer) return;
+            
+            customer.status = 'contacted';
+            customer.updatedAt = new Date().toISOString();
+            
+            // Save to cloud if connected
+            if (!usingLocalStorage) {
+                await saveCustomersToCloud();
+            }
+            
+            // Always save to local storage
+            saveCustomersToLocal();
+            
+            // Check reminders again
+            checkReminders();
+            
+            renderCustomersTable();
+            showNotification('Marked as contacted!', 'success');
+        }
+        
+        // Delete customer
+        async function deleteCustomer(id) {
+            if (!confirm('Are you sure you want to delete this customer record?')) {
+                return;
+            }
+            
+            // Remove customer from array
+            customers = customers.filter(customer => customer.id !== id);
+            
+            // Save to cloud if connected
+            if (!usingLocalStorage) {
+                const savedToCloud = await saveCustomersToCloud();
+                updateStorageStatus(savedToCloud);
+            }
+            
+            // Always save to local storage
+            saveCustomersToLocal();
+            
+            // Check reminders again
+            checkReminders();
+            
+            // Refresh table
+            renderCustomersTable();
+            
+            showNotification('Customer record deleted successfully!', 'success');
+        }
+        
+        // Get customer by ID
+        function getCustomerById(id) {
+            return customers.find(customer => customer.id === id);
+        }
+        
+        // Export data as JSON file
+        function exportData() {
+            if (customers.length === 0) {
+                showNotification('No data to export', 'info');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(customers, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `customer-data-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Data exported successfully!', 'success');
+        }
+        
+        // Import data from JSON file
+        async function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        // Validate imported data
+                        if (!Array.isArray(importedData)) {
+                            throw new Error('Invalid data format. Expected an array.');
+                        }
+                        
+                        // Check if imported data has required fields
+                        const sampleItem = importedData[0];
+                        if (sampleItem && (!sampleItem.name || !sampleItem.phoneNumbers)) {
+                            throw new Error('Invalid data format. Missing required fields.');
+                        }
+                        
+                        // Merge imported data with existing data
+                        const existingIds = customers.map(c => c.id);
+                        const newCustomers = importedData.filter(c => !existingIds.includes(c.id));
+                        
+                        customers = [...customers, ...newCustomers];
+                        
+                        // Save to cloud if connected
+                        if (!usingLocalStorage) {
+                            const savedToCloud = await saveCustomersToCloud();
+                            updateStorageStatus(savedToCloud);
+                        }
+                        
+                        // Always save to local storage
+                        saveCustomersToLocal();
+                        
+                        // Check for new reminders
+                        checkReminders();
+                        
+                        // Refresh table
+                        renderCustomersTable();
+                        
+                        showNotification(`${newCustomers.length} new customer(s) imported successfully!`, 'success');
+                    } catch (error) {
+                        console.error('Error importing data:', error);
+                        showNotification('Failed to import data. Please check the file format.', 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // Clear all data
+        async function clearAllData() {
+            if (customers.length === 0) {
+                showNotification('No data to clear', 'info');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete ALL customer records? This cannot be undone!')) {
+                customers = [];
+                
+                // Clear from cloud if connected
+                if (!usingLocalStorage) {
+                    const savedToCloud = await saveCustomersToCloud();
+                    updateStorageStatus(savedToCloud);
+                }
+                
+                // Clear from local storage
+                localStorage.removeItem('customerData');
+                
+                // Update reminders
+                checkReminders();
+                
+                renderCustomersTable();
+                showNotification('All data cleared successfully!', 'success');
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Show API credentials (for debugging)
+        console.log('Your App is connected to:');
+        console.log('Bin ID:', BIN_ID);
+        console.log('API URL:', API_URL);
+        console.log('Your data will be saved to your personal JSONBin.io account');
+        
+        // Make functions available globally
+        window.requestNotificationPermission = requestNotificationPermission;
+        window.showRemindersModal = showRemindersModal;
+        window.showCustomerDetails = showCustomerDetails;
+        window.editCustomer = editCustomer;
+        window.markAsContacted = markAsContacted;
+        window.deleteCustomer = deleteCustomer;
+    </script>
+</body>
+</html>
